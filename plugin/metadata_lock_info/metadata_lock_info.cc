@@ -21,7 +21,7 @@
 #include "sql_show.h"
 
 static const LEX_STRING metadata_lock_info_lock_name[] = {
-  { C_STRING_WITH_LEN("Global read lock") },
+  { C_STRING_WITH_LEN("Backup lock") },
   { C_STRING_WITH_LEN("Schema metadata lock") },
   { C_STRING_WITH_LEN("Table metadata lock") },
   { C_STRING_WITH_LEN("Stored function metadata lock") },
@@ -29,7 +29,6 @@ static const LEX_STRING metadata_lock_info_lock_name[] = {
   { C_STRING_WITH_LEN("Stored package body metadata lock") },
   { C_STRING_WITH_LEN("Trigger metadata lock") },
   { C_STRING_WITH_LEN("Event metadata lock") },
-  { C_STRING_WITH_LEN("Commit lock") },
   { C_STRING_WITH_LEN("User lock") },
 };
 
@@ -44,6 +43,13 @@ static const LEX_STRING metadata_lock_info_lock_mode[] = {
   { C_STRING_WITH_LEN("MDL_SHARED_NO_WRITE") },
   { C_STRING_WITH_LEN("MDL_SHARED_NO_READ_WRITE") },
   { C_STRING_WITH_LEN("MDL_EXCLUSIVE") },
+};
+
+static const LEX_STRING backup_lock_types[] = {
+  { C_STRING_WITH_LEN("MDL_BACKUP_FTWRL1") },
+  { C_STRING_WITH_LEN("MDL_BACKUP_FTWRL2") },
+  { C_STRING_WITH_LEN("MDL_BACKUP_STMT") },
+  { C_STRING_WITH_LEN("MDL_BACKUP_COMMIT") }
 };
 
 static ST_FIELD_INFO i_s_metadata_lock_info_fields_info[] =
@@ -83,10 +89,20 @@ int i_s_metadata_lock_info_fill_row(
   MDL_key::enum_mdl_namespace mdl_namespace = mdl_key->mdl_namespace();
   table->field[0]->store((longlong) mdl_ctx->get_thread_id(), TRUE);
   table->field[1]->set_notnull();
-  table->field[1]->store(
-    metadata_lock_info_lock_mode[(int) mdl_ticket_type].str,
-    metadata_lock_info_lock_mode[(int) mdl_ticket_type].length,
-    system_charset_info);
+  if (mdl_namespace == MDL_key::BACKUP)
+  {
+    table->field[1]->store(
+      backup_lock_types[(int) mdl_ticket_type].str,
+      backup_lock_types[(int) mdl_ticket_type].length,
+      system_charset_info);
+  }
+  else
+  {
+    table->field[1]->store(
+      metadata_lock_info_lock_mode[(int) mdl_ticket_type].str,
+      metadata_lock_info_lock_mode[(int) mdl_ticket_type].length,
+      system_charset_info);
+  }
   table->field[2]->set_null();
   table->field[3]->set_notnull();
   table->field[3]->store(
