@@ -244,12 +244,18 @@ enum enum_mdl_type {
 
 
 /** Backup locks */
-#define MDL_BACKUP_FTWRL1 enum_mdl_type(0)
-#define MDL_BACKUP_FTWRL2 enum_mdl_type(1)
-#define MDL_BACKUP_STMT enum_mdl_type(2)
-#define MDL_BACKUP_COMMIT enum_mdl_type(3)
-#define MDL_BACKUP_END enum_mdl_type(4)
-
+#define MDL_BACKUP_STAGE1 enum_mdl_type(0)
+#define MDL_BACKUP_STAGE2 enum_mdl_type(1)
+#define MDL_BACKUP_STAGE3 enum_mdl_type(2)
+#define MDL_BACKUP_STAGE4 enum_mdl_type(3)
+#define MDL_BACKUP_FTWRL1 enum_mdl_type(4)
+#define MDL_BACKUP_FTWRL2 enum_mdl_type(5)
+#define MDL_BACKUP_DML enum_mdl_type(6)
+#define MDL_BACKUP_TRANS_DML enum_mdl_type(7)
+#define MDL_BACKUP_SYS_DML enum_mdl_type(8)
+#define MDL_BACKUP_STMT enum_mdl_type(9)
+#define MDL_BACKUP_COMMIT enum_mdl_type(10)
+#define MDL_BACKUP_END enum_mdl_type(11)
 
 
 /** Duration of metadata lock. */
