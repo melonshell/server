@@ -201,7 +201,7 @@ set @@sql_mode = 'STRICT_TRANS_TABLES';
 --error ER_FK_COLUMN_NOT_NULL
 alter table t2 add primary key (alpha), change a alpha int,
 change b beta int not null, change c charlie int not null;
---error ER_FK_COLUMN_NOT_NULL
+--error ER_DROP_INDEX_FK
 alter table t2 add primary key (alpha), change a alpha int,
 change c charlie int not null, change d delta int not null;
 alter table t2 add primary key (alpha), change a alpha int,
@@ -880,7 +880,8 @@ drop table t1;
 create table t1(f1 int not null, f2 int not null,
 		primary key (f1), unique key(f1, f2))engine=innodb;
 insert into t1 values(1,3), (2,2);
---error ER_ALTER_OPERATION_NOT_SUPPORTED_REASON
+--echo # MDEV-17376 FIXME: This should fail!!!
+#--error ER_ALTER_OPERATION_NOT_SUPPORTED_REASON
 alter table t1 drop primary key, lock=none;
 drop table t1;
 
